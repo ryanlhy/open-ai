@@ -5,6 +5,7 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
+// if environment variable OPENAI_API_KEY is not set, this will return an error message
 export default async function (req, res) {
   if (!configuration.apiKey) {
     res.status(500).json({
@@ -15,6 +16,7 @@ export default async function (req, res) {
     return;
   }
 
+  // Validate the animal name is not empty
   const animal = req.body.animal || '';
   if (animal.trim().length === 0) {
     res.status(400).json({
@@ -26,10 +28,12 @@ export default async function (req, res) {
   }
 
   try {
+    // Call the OpenAI API to generate names
     const completion = await openai.createCompletion({
       model: "text-davinci-003",
       prompt: generatePrompt(animal),
       temperature: 0.6,
+      max_tokens: 100,
     });
     res.status(200).json({ result: completion.data.choices[0].text });
   } catch(error) {
@@ -48,15 +52,33 @@ export default async function (req, res) {
   }
 }
 
+// function generatePrompt(animal) {
+//   // Capitalize the first letter of animal name
+//   const capitalizedAnimal =
+//     animal[0].toUpperCase() + animal.slice(1).toLowerCase();
+//   return `Suggest four names for an animal that is a superhero.
+
+// Animal: Cat
+// Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
+// Animal: Dog
+// Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
+// Animal: ${capitalizedAnimal}
+// Names:`;
+// }
+
+// function generatePrompt(animal) {
+//   // Capitalize the first letter of animal name
+//   const capitalizedAnimal =
+//     animal[0].toUpperCase() + animal.slice(1).toLowerCase();
+//   return `Suggest two names for an animal that is a superhero.
+  
+// Animal: ${capitalizedAnimal}
+// Names:`;
+// }
+
 function generatePrompt(animal) {
+  // Capitalize the first letter of animal name
   const capitalizedAnimal =
     animal[0].toUpperCase() + animal.slice(1).toLowerCase();
-  return `Suggest three names for an animal that is a superhero.
-
-Animal: Cat
-Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
-Animal: Dog
-Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
-Animal: ${capitalizedAnimal}
-Names:`;
+  return `${capitalizedAnimal}`;
 }

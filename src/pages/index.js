@@ -21,7 +21,7 @@ export default function Home() {
       if (response.status !== 200) {
         throw data.error || new Error(`Request failed with status ${response.status}`);
       }
-
+      
       setResult(data.result);
       setAnimalInput("");
     } catch(error) {
@@ -45,7 +45,7 @@ export default function Home() {
           <input
             type="text"
             name="animal"
-            placeholder="Enter an animal"
+            placeholder="Enter an animal, it returns 4"
             value={animalInput}
             onChange={(e) => setAnimalInput(e.target.value)}
           />
